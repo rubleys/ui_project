@@ -6,6 +6,7 @@ import { useEpisodes } from './useEpisodes';
 import EpisodesTable from './EpisodesTable';
 import { Button } from '@mui/material';
 import { toggleIdColumn } from './episodesSlice';
+import EpisodeDrawer from './EpisodeDrawer';
 
 export default function EpisodesPage() {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ export default function EpisodesPage() {
 
       {/* <pre>{JSON.stringify(episodes, null, 2)}</pre> */}
       <EpisodesTable />
+      <EpisodeDrawer />
     </div>
   );
 }

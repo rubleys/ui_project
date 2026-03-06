@@ -1,6 +1,7 @@
 import './App.css'
 import { Link, Route, Routes } from 'react-router-dom'
 import EpisodesPage from './features/episodes/EpisodesPage';
+import DashboardPage from './features/dashboard/DashboardPage';
 
 function App() {
   
@@ -12,7 +13,7 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<h1>Dashboard</h1>} />
+        <Route path="/" element={<DashboardPage />} />
         <Route path="/episodes" element={<EpisodesPage />} />
       </Routes>
 
