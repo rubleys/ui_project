@@ -3,9 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../app/store';
 import { setEpisodes } from './episodesSlice';
 import { useEpisodes } from './useEpisodes';
+import EpisodesTable from './EpisodesTable';
+import { Button } from '@mui/material';
+import { toggleIdColumn } from './episodesSlice';
 
 export default function EpisodesPage() {
   const dispatch = useDispatch();
+  const showId = useSelector((state: RootState) => state.episodes.showIdColumn);
   const episodes = useSelector((state: RootState) => state.episodes.list);
   const skipQuery = episodes.length > 0; // si ya tenemos episodios, no hacemos la consulta
   const page = 1; // luego lo haremos dinámico
@@ -25,7 +29,12 @@ export default function EpisodesPage() {
   return (
     <div>
       <h1>Episodios</h1>
-      <pre>{JSON.stringify(episodes, null, 2)}</pre>
+      <Button variant="contained" onClick={() => dispatch(toggleIdColumn())}>
+        {showId ? "Ocultar ID" : "Mostrar ID"}
+      </Button>
+
+      {/* <pre>{JSON.stringify(episodes, null, 2)}</pre> */}
+      <EpisodesTable />
     </div>
   );
 }
