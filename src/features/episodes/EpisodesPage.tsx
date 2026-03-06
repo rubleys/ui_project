@@ -4,8 +4,6 @@ import type { RootState } from '../../app/store';
 import { setEpisodes } from './episodesSlice';
 import { useEpisodes } from './useEpisodes';
 import EpisodesTable from './EpisodesTable';
-import { Button } from '@mui/material';
-import { toggleIdColumn } from './episodesSlice';
 import EpisodeDrawer from './EpisodeDrawer';
 
 export default function EpisodesPage() {
@@ -30,10 +28,7 @@ export default function EpisodesPage() {
   return (
     <div>
       <h1>Episodios</h1>
-      <Button variant="contained" onClick={() => dispatch(toggleIdColumn())}>
-        {showId ? "Ocultar ID" : "Mostrar ID"}
-      </Button>
-
+      
       {/* <pre>{JSON.stringify(episodes, null, 2)}</pre> */}
       <EpisodesTable />
       <EpisodeDrawer />

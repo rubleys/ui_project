@@ -1,13 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export type ThemeMode = 'light' | 'dark';
-
 interface ThemeState {
-  mode: ThemeMode;
+  mode: 'light' | 'dark';
 }
 
 const initialState: ThemeState = {
-  mode: 'light',
+  mode: 'light', // valor por defecto
 };
 
 const themeSlice = createSlice({
@@ -20,7 +18,7 @@ const themeSlice = createSlice({
     setTheme(state, action) {
       state.mode = action.payload;
     }
-  }
+  },
 });
 
 export const { toggleTheme, setTheme } = themeSlice.actions;

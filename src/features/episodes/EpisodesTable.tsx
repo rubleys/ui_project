@@ -6,7 +6,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Menu,
   MenuItem,
 } from '@mui/material';
@@ -15,6 +14,11 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../app/store';
 import { selectEpisode, openDrawer } from './episodesSlice';
+import { IconButton, Tooltip, Button } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { toggleIdColumn } from './episodesSlice';
+
 
 export default function EpisodesTable() {
   const episodes = useSelector((state: RootState) => state.episodes.list);
@@ -47,15 +51,32 @@ export default function EpisodesTable() {
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell>Actions</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Episode</TableCell>
-            <TableCell>Air Date</TableCell>
-            <TableCell>Created</TableCell>
-            {showId && <TableCell>ID</TableCell>}
-          </TableRow>
-        </TableHead>
+  <TableRow>
+    <TableCell>Actions</TableCell>
+    <TableCell>Name</TableCell>
+    <TableCell>Episode</TableCell>
+    <TableCell>Air Date</TableCell>
+    <TableCell>Created</TableCell>
+
+    {/* Celda del botón dentro del header */}
+    <TableCell align="right">
+      <Tooltip title={showId ? "Ocultar ID" : "Mostrar ID"}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => dispatch(toggleIdColumn())}
+          startIcon={showId ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        >
+          {/* Sin texto, solo el ícono */}
+        </Button>
+      </Tooltip>
+    </TableCell>
+
+    {/* Header de la columna ID (solo si está activa) */}
+    {showId && <TableCell>ID</TableCell>}
+  </TableRow>
+</TableHead>
+
 
         <TableBody>
           {episodes.map((ep) => (

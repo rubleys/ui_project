@@ -41,7 +41,7 @@ export default function EpisodeDrawer() {
         {episode && (
           <>
             <Typography variant="h6" gutterBottom>
-              {episode.name}
+              {episode.id} {episode.name}
             </Typography>
             <Typography variant="body2">Episode: {episode.episode}</Typography>
             <Typography variant="body2">Air date: {episode.air_date}</Typography>
