@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# Rick & Morty Episodes Dashboard
+A React + TypeScript + Vite application that displays paginated episodes from the Rick & Morty GraphQL API, allows viewing episode details with characters, and persists UI preferences using Redux Toolkit and localStorage.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Features
+- Paginated episodes table
+- Episode detail drawer with character list
+- Show/Hide ID column
+- Global light/dark theme toggle
+- Dashboard with reusable cards
+- Fully responsive UI using Material UI
+- State persistence using Redux + localStorage
+- Apollo Client for GraphQL queries
+- Avoids unnecessary API calls through caching strategy
 
-Currently, two official plugins are available:
+# Tech Stack
+- React 18 + TypeScript
+- Vite
+- Redux Toolkit
+- Apollo Client
+- Material UI (MUI)
+- React Router
+- localStorage persistence
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Functional Requirements
+Episodes List
+- Fetch paginated episodes from the Rick & Morty GraphQL API.
+- Display episodes in a Material UI table.
+- Columns: Actions, Name, Episode, Air Date, Created, ID (toggleable).
+- Clicking a row opens a drawer with episode details.
+Episode Drawer
+- Shows:
+- Episode ID
+- Name
+- Episode code (e.g., S01E01)
+- Air date
+- Created date
+- Characters (image, name, species, status)
+- Drawer must open/close using Redux state.
+- Drawer must avoid unnecessary refetching.
+Theme System
+- Global light/dark theme toggle.
+- Theme selection must persist across page reloads.
+Column Visibility
+- User can toggle the visibility of the ID column.
+- Visibility preference must persist across reloads.
 
-## React Compiler
+# Running the Project
+npm install
+npm run dev
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
