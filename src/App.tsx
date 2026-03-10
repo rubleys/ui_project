@@ -7,6 +7,10 @@ import type { RootState } from './app/store';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import ThemeToggleButton from './features/theme/ThemeToggleButton';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 
 function App() {
@@ -23,18 +27,25 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <nav style={{ 
-  padding: 20, 
-  display: 'flex', 
-  justifyContent: 'space-between', 
-  alignItems: 'center' 
-}}>
-  <div>
-    <Link to="/">Inicio</Link> | <Link to="/episodes">Episodios</Link>
-  </div>
+      <AppBar position="static">
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          
+          {/* Navegación */}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography variant="h6" component={Link} to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              Home
+            </Typography>
 
-  <ThemeToggleButton />
-</nav>
+            <Typography variant="h6" component={Link} to="/episodes" style={{ textDecoration: 'none', color: 'inherit' }}>
+              Episodes
+            </Typography>
+          </Box>
+
+          {/* Botón de tema */}
+          <ThemeToggleButton />
+        </Toolbar>
+      </AppBar>
+
 
       <Routes>
         <Route path="/" element={<DashboardPage />} />
