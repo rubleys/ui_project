@@ -8,21 +8,27 @@ import {
   Paper,
   Menu,
   MenuItem,
+  Button,
+  IconButton,
+  Tooltip,
+  Box, 
+  Toolbar,
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '../../app/store';
-import { selectEpisode, openDrawer } from './episodesSlice';
-import { IconButton, Tooltip, Button } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { toggleIdColumn } from './episodesSlice';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useDispatch } from 'react-redux';
+import { selectEpisode } from './episodesSlice';
+import { openDrawer, toggleIdColumn } from '../ui/uiSlice';
+import type { Episode } from '../../types/episode';
+import { useState } from 'react';
 
+interface EpisodesTableProps {
+  episodes: Episode[];
+  showId: boolean;
+}
 
-export default function EpisodesTable() {
-  const episodes = useSelector((state: RootState) => state.episodes.list);
-  const showId = useSelector((state: RootState) => state.episodes.showIdColumn);
+export default function EpisodesTable({ episodes, showId }: EpisodesTableProps) {
   const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -40,66 +46,66 @@ export default function EpisodesTable() {
 
   const handleView = () => {
     if (selectedId) {
-      const episode = episodes.find((e) => e.id === selectedId);
-      dispatch(selectEpisode(episode));
+      dispatch(selectEpisode(selectedId)); // Solo ID
       dispatch(openDrawer());
     }
     handleMenuClose();
   };
 
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-  <TableRow>
-    <TableCell>Actions</TableCell>
-    <TableCell>Name</TableCell>
-    <TableCell>Episode</TableCell>
-    <TableCell>Air Date</TableCell>
-    <TableCell>Created</TableCell>
+  const handleToggleId = () => {
+    dispatch(toggleIdColumn());
+  };
 
-    {/* Celda del botón dentro del header */}
-    <TableCell align="right">
-      <Tooltip title={showId ? "Ocultar ID" : "Mostrar ID"}>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => dispatch(toggleIdColumn())}
-          startIcon={showId ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        >
-          {/* Sin texto, solo el ícono */}
-        </Button>
-      </Tooltip>
-    </TableCell>
+   return (
+    <Box>
+      <Toolbar>
+        <Tooltip title={showId ? "Ocultar ID" : "Mostrar ID"}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleToggleId}
+            startIcon={showId ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          >
+            Toggle ID
+          </Button>
+        </Tooltip>
+      </Toolbar>
 
-    {/* Header de la columna ID (solo si está activa) */}
-    {showId && <TableCell>ID</TableCell>}
-  </TableRow>
-</TableHead>
-
-
-        <TableBody>
-          {episodes.map((ep) => (
-            <TableRow key={ep.id}>
-              <TableCell>
-                <IconButton onClick={(e) => handleMenuOpen(e, ep.id)}>
-                  <MoreVertIcon />
-                </IconButton>
-              </TableCell>
-
-              <TableCell>{ep.name}</TableCell>
-              <TableCell>{ep.episode}</TableCell>
-              <TableCell>{ep.air_date}</TableCell>
-              <TableCell>{new Date(ep.created).toLocaleDateString()}</TableCell>
-              {showId && <TableCell>{ep.id}</TableCell>}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Actions</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Episode</TableCell>
+              <TableCell>Air Date</TableCell>
+              <TableCell>Created</TableCell>
+              {showId && <TableCell>ID</TableCell>}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={handleView}>View</MenuItem>
-      </Menu>
-    </TableContainer>
+          <TableBody>
+            {episodes.map((ep) => (
+              <TableRow key={ep.id}>
+                <TableCell>
+                  <IconButton onClick={(e) => handleMenuOpen(e, ep.id)}>
+                    <MoreVertIcon />
+                  </IconButton>
+                </TableCell>
+                <TableCell>{ep.name}</TableCell>
+                <TableCell>{ep.episode}</TableCell>
+                <TableCell>{ep.air_date}</TableCell>
+                <TableCell>{new Date(ep.created).toLocaleDateString()}</TableCell>
+                {showId && <TableCell>{ep.id}</TableCell>}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <MenuItem onClick={handleView}>View</MenuItem>
+        </Menu>
+      </TableContainer>
+    </Box>
   );
 }

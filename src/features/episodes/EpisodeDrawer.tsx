@@ -10,27 +10,29 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
-import { closeDrawer } from './episodesSlice';
+import { closeDrawer } from '../ui/uiSlice';
+import { clearSelection } from './episodesSlice';
 import { useQuery } from '@apollo/client/react';
+import type { GetEpisodeDetailQuery, GetEpisodesDetailsVariables } from '../../types/graphql';
 import { GET_EPISODE_DETAIL } from '../../graphql/queries';
+import type { Episode } from '../../types/episode';
 
 export default function EpisodeDrawer() {
   const dispatch = useDispatch();
-  const open = useSelector((state: RootState) => state.episodes.drawerOpen);
-  const selected = useSelector((state: RootState) => state.episodes.selected);
+  const open = useSelector((state: RootState) => state.ui.drawerOpen);
+  const selectedId = useSelector((state: RootState) => state.episodes.selectedEpisodeId);
 
-  const id = selected?.id;
-
-  const { data, loading, error } = useQuery(GET_EPISODE_DETAIL, {
-    variables: { id },
-    skip: !id,
+  const { data, loading, error } = useQuery<GetEpisodeDetailQuery, GetEpisodesDetailsVariables>(GET_EPISODE_DETAIL, {
+    variables: { id: selectedId! },
+    skip: !selectedId,
   });
 
   const handleClose = () => {
     dispatch(closeDrawer());
+    dispatch(clearSelection());
   };
 
-  const episode = data?.episode ?? selected;
+  const episode: Episode | undefined = data?.episode;
 
   return (
     <Drawer anchor="right" open={open} onClose={handleClose}>

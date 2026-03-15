@@ -1,47 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface EpisodesState {
-  list: any[];        // luego lo tipamos bien
-  selected: any | null;
-  drawerOpen: boolean;
-  showIdColumn: boolean;
+  selectedEpisodeId: string | null; // Solo ID para evitar duplicación de datos
 }
 
 const initialState: EpisodesState = {
-  list: [],
-  selected: null,
-  drawerOpen: false,
-  showIdColumn: true,
+  selectedEpisodeId: null,
 };
 
 const episodesSlice = createSlice({
   name: 'episodes',
   initialState,
   reducers: {
-    setEpisodes(state, action) {
-      state.list = action.payload;
+    selectEpisode(state, action: PayloadAction<string>) {
+      state.selectedEpisodeId = action.payload;
     },
-    selectEpisode(state, action) {
-      state.selected = action.payload;
-    },
-    openDrawer(state) {
-      state.drawerOpen = true;
-    },
-    closeDrawer(state) {
-      state.drawerOpen = false;
-    },
-    toggleIdColumn(state) {
-      state.showIdColumn = !state.showIdColumn;
+    clearSelection(state) {
+      state.selectedEpisodeId = null;
     }
   }
 });
 
-export const {
-  setEpisodes,
-  selectEpisode,
-  openDrawer,
-  closeDrawer,
-  toggleIdColumn
-} = episodesSlice.actions;
-
+export const { selectEpisode, clearSelection } = episodesSlice.actions;
 export default episodesSlice.reducer;

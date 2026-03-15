@@ -1,36 +1,26 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { RootState } from '../../app/store';
-import { setEpisodes } from './episodesSlice';
 import { useEpisodes } from './useEpisodes';
 import EpisodesTable from './EpisodesTable';
 import EpisodeDrawer from './EpisodeDrawer';
+import { CircularProgress, Typography } from '@mui/material';
 
 export default function EpisodesPage() {
-  const dispatch = useDispatch();
-  const showId = useSelector((state: RootState) => state.episodes.showIdColumn);
-  const episodes = useSelector((state: RootState) => state.episodes.list);
-  const skipQuery = episodes.length > 0; // si ya tenemos episodios, no hacemos la consulta
-  const page = 1; // luego lo haremos dinámico
+  const currentPage = useSelector((state: RootState) => state.ui.currentPage);
+  const showId = useSelector((state: RootState) => state.ui.showIdColumn);
 
-  const { data, loading, error } = useEpisodes(page, skipQuery);
-  console.log("DATA:", data);
+  // Usar Apollo directamente, sin skip para simplificar (cache maneja)
+  const { data, loading, error } = useEpisodes(currentPage, false);
 
-  useEffect(() => {
-    if (episodes.length === 0 && data?.episodes?.results) {
-      dispatch(setEpisodes(data.episodes.results));
-    }
-  }, [data, episodes.length, dispatch]);
+  if (loading) return <CircularProgress />;
+  if (error) return <Typography>Error al cargar episodios</Typography>;
 
-  if (loading && episodes.length === 0) return <p>Cargando...</p>;
-  if (error) return <p>Error al cargar episodios</p>;
+  const episodes = data?.episodes?.results || [];
 
   return (
     <div>
-      <h1>Episodios</h1>
-      
-      {/* <pre>{JSON.stringify(episodes, null, 2)}</pre> */}
-      <EpisodesTable />
+      <Typography variant="h4" gutterBottom>Episodios</Typography>
+      <EpisodesTable episodes={episodes} showId={showId} />
       <EpisodeDrawer />
     </div>
   );

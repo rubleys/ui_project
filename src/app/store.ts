@@ -1,33 +1,36 @@
 import { configureStore } from '@reduxjs/toolkit';
-// import rootReducer from './rootReducer'; // si lo usas
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // localStorage
 import episodesReducer from '../features/episodes/episodesSlice';
 import themeReducer from '../features/theme/themeSlice';
+import uiReducer from '../features/ui/uiSlice';
 
-//para persistencia en localStorage
-function loadState() {
-  try {
-    const serialized = localStorage.getItem('reduxState');
-    if (!serialized) return undefined;
-    return JSON.parse(serialized);
-  } catch {
-    return undefined;
-  }
-}
+//to handle persitence of theme mode (light/dark) across sessions, but not transient UI state like the drawer open/close state which should reset on page refresh
+const themePersistConfig = {
+  key: 'theme',
+  storage,
+  whitelist: ['mode'], 
+};
+
+//to handle persistence of UI preferences (like column visibility and current page), but not transient UI state like the drawer open/close state which should reset on page refresh
+const uiPersistConfig = {
+  key: 'ui',
+  storage,
+  whitelist: ['showIdColumn', 'currentPage'], 
+};
+
+const persistedThemeReducer = persistReducer(themePersistConfig, themeReducer);
+const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
 
 export const store = configureStore({
   reducer: {
-    episodes: episodesReducer,
-    theme: themeReducer,
+    episodes: episodesReducer, // No persistido, solo estado temporal
+    theme: persistedThemeReducer,
+    ui: persistedUiReducer,
   },
-  preloadedState: loadState(),
 });
 
-store.subscribe(() => {
-  try {
-    const serialized = JSON.stringify(store.getState());
-    localStorage.setItem('reduxState', serialized);
-  } catch {}
-});
+export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
