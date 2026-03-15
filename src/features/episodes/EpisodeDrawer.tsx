@@ -13,7 +13,7 @@ import type { RootState } from '../../app/store';
 import { closeDrawer } from '../ui/uiSlice';
 import { clearSelection } from './episodesSlice';
 import { useQuery } from '@apollo/client/react';
-import type { GetEpisodeDetailQuery, GetEpisodesDetailVariables } from '../../types/graphql';
+import type { GetEpisodeDetailQuery, GetEpisodeDetailVariables } from '../../types/graphql';
 import { GET_EPISODE_DETAIL } from '../../graphql/queries';
 import type { Character, Episode } from '../../types/episode';
 
@@ -22,7 +22,7 @@ export default function EpisodeDrawer() {
   const open = useSelector((state: RootState) => state.ui.drawerOpen);
   const selectedId = useSelector((state: RootState) => state.episodes.selectedEpisodeId);
 
-  const { data, loading, error } = useQuery<GetEpisodeDetailQuery, GetEpisodesDetailVariables>(GET_EPISODE_DETAIL, {
+  const { data, loading, error } = useQuery<GetEpisodeDetailQuery, GetEpisodeDetailVariables>(GET_EPISODE_DETAIL, {
     variables: { id: selectedId! },
     skip: !selectedId,
   });

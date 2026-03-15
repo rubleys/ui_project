@@ -5,7 +5,7 @@ export interface GetEpisodesVariables {
     page?: number;
 }
 
-export interface GetEpisodesDetailVariables {
+export interface GetEpisodeDetailVariables {
     id: string;
 }
 
