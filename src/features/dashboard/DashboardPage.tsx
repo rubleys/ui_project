@@ -9,9 +9,9 @@ export default function DashboardPage() {
     <Grid container spacing={3} padding={3}>
       <Grid item xs={12} sm={6} md={4}>
         <DashboardCard
-          title="Episodios"
-          description="Consulta la lista completa de episodios, visualiza detalles y personajes."
-          buttonText="Entrar"
+          title="Episodes"
+          description="Check the complete list of episodes, view details and characters."
+          buttonText="Go to Episodes"
           onClick={() => navigate('/episodes')}
         />
       </Grid>

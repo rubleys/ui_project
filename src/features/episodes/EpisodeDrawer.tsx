@@ -13,16 +13,16 @@ import type { RootState } from '../../app/store';
 import { closeDrawer } from '../ui/uiSlice';
 import { clearSelection } from './episodesSlice';
 import { useQuery } from '@apollo/client/react';
-import type { GetEpisodeDetailQuery, GetEpisodesDetailsVariables } from '../../types/graphql';
+import type { GetEpisodeDetailQuery, GetEpisodesDetailVariables } from '../../types/graphql';
 import { GET_EPISODE_DETAIL } from '../../graphql/queries';
-import type { Episode } from '../../types/episode';
+import type { Character, Episode } from '../../types/episode';
 
 export default function EpisodeDrawer() {
   const dispatch = useDispatch();
   const open = useSelector((state: RootState) => state.ui.drawerOpen);
   const selectedId = useSelector((state: RootState) => state.episodes.selectedEpisodeId);
 
-  const { data, loading, error } = useQuery<GetEpisodeDetailQuery, GetEpisodesDetailsVariables>(GET_EPISODE_DETAIL, {
+  const { data, loading, error } = useQuery<GetEpisodeDetailQuery, GetEpisodesDetailVariables>(GET_EPISODE_DETAIL, {
     variables: { id: selectedId! },
     skip: !selectedId,
   });
@@ -56,7 +56,7 @@ export default function EpisodeDrawer() {
             </Typography>
 
             <List dense>
-              {episode.characters?.map((ch: any) => (
+              {episode.characters?.map((ch: Character) => (
                 <ListItem key={ch.id}>
                   <ListItemAvatar>
                     <Avatar src={ch.image} alt={ch.name} />
