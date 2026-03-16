@@ -7,7 +7,10 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  IconButton,
+  Divider,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
 import { closeDrawer } from '../ui/uiSlice';
@@ -36,30 +39,42 @@ export default function EpisodeDrawer() {
 
   return (
     <Drawer anchor="right" open={open} onClose={handleClose}>
-      <Box sx={{ width: 400, p: 2 }}>
-        {loading && <Typography>Cargando detalle...</Typography>}
-        {error && <Typography>Error al cargar detalle</Typography>}
+      <Box sx={{ width: 450, p: 3, position: 'relative' }}>
+        <IconButton
+          onClick={handleClose}
+          sx={{ position: 'absolute', top: 8, right: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+
+        {loading && <Typography>Loading details...</Typography>}
+        {error && <Typography>Error loading details</Typography>}
 
         {episode && (
           <>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{ fontSize: '1.2rem' }}>
               {episode.id} {episode.name}
             </Typography>
-            <Typography variant="body2">Episode: {episode.episode}</Typography>
-            <Typography variant="body2">Air date: {episode.air_date}</Typography>
-            <Typography variant="body2">
-              Created: {new Date(episode.created).toLocaleDateString()}
+            <Typography variant="body1">Episode: {episode.episode}</Typography>
+            <Typography variant="body1">Air date: {episode.air_date}</Typography>
+            <Typography variant="body1">
+              Created: {new Date(episode.created).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
             </Typography>
+             <Divider sx={{ my: 2 }} />
 
-            <Typography variant="subtitle1" sx={{ mt: 2 }}>
+            <Typography variant="h6" sx={{ mt: 2, fontSize: '1.2rem' }}>
               Characters
             </Typography>
 
-            <List dense>
+            <List>
               {episode.characters?.map((ch: Character) => (
-                <ListItem key={ch.id}>
+                <ListItem key={ch.id} sx={{ display: 'flex', gap: 2 }}>
                   <ListItemAvatar>
-                    <Avatar src={ch.image} alt={ch.name} />
+                    <Avatar src={ch.image} alt={ch.name} sx={{ width: 56, height: 56 }} />  {/* Avatar más grande */}
                   </ListItemAvatar>
                   <ListItemText
                     primary={ch.name}
@@ -67,7 +82,7 @@ export default function EpisodeDrawer() {
                   />
                 </ListItem>
               )) || (
-                <Typography variant="body2">
+                <Typography variant="body1">
                   No character data available.
                 </Typography>
               )}

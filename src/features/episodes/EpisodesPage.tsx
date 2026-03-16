@@ -25,8 +25,6 @@ export default function EpisodesPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>Episodes</Typography>
-      
       <EpisodesTable episodes={episodes} showId={showId} loading={loading}/>
       
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>

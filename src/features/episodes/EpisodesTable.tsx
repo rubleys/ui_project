@@ -14,7 +14,9 @@ import {
   Box, 
   Toolbar,
   Skeleton,
+  Typography,
 } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -32,6 +34,7 @@ interface EpisodesTableProps {
 
 export default function EpisodesTable({ episodes, showId, loading = false }: EpisodesTableProps) {
   const dispatch = useDispatch();
+  const isMobile = useMediaQuery('(max-width:768px)');
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -48,7 +51,7 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
 
   const handleView = () => {
     if (selectedId) {
-      dispatch(selectEpisode(selectedId)); // Solo ID
+      dispatch(selectEpisode(selectedId));
       dispatch(openDrawer());
     }
     handleMenuClose();
@@ -74,28 +77,31 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
    return (
     <Box>
       <Toolbar>
-        <Tooltip title={showId ? "Ocultar ID" : "Mostrar ID"}>
+        <Typography variant="h5">Episodes List</Typography>
+        <Box sx={{ flexGrow: 1 }} /> 
+        <Tooltip title={showId ? "Hide ID" : "Show ID"}>
           <Button
             variant="outlined"
             size="small"
             onClick={handleToggleId}
             startIcon={showId ? <VisibilityOffIcon /> : <VisibilityIcon />}
           >
-            Toggle ID
+            {showId ? "Hide Id" : "Show Id"}
           </Button>
         </Tooltip>
       </Toolbar>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} elevation={2}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Actions</TableCell>
+              {showId && <TableCell>ID</TableCell>}
               <TableCell>Name</TableCell>
               <TableCell>Episode</TableCell>
               <TableCell>Air Date</TableCell>
-              <TableCell>Created</TableCell>
-              {showId && <TableCell>ID</TableCell>}
+              {!isMobile && <TableCell>Created</TableCell>} 
+              
             </TableRow>
           </TableHead>
 
@@ -103,17 +109,25 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
             {loading ? (
               renderSkeletons(5)
             ) : (episodes.map((ep) => (
-              <TableRow key={ep.id}>
+              <TableRow key={ep.id} hover> 
                 <TableCell>
                   <IconButton onClick={(e) => handleMenuOpen(e, ep.id)}>
                     <MoreVertIcon />
                   </IconButton>
                 </TableCell>
+                {showId && <TableCell>{ep.id}</TableCell>}
                 <TableCell>{ep.name}</TableCell>
                 <TableCell>{ep.episode}</TableCell>
                 <TableCell>{ep.air_date}</TableCell>
-                <TableCell>{new Date(ep.created).toLocaleDateString()}</TableCell>
-                {showId && <TableCell>{ep.id}</TableCell>}
+                {!isMobile && (
+                    <TableCell>
+                      {new Date(ep.created).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </TableCell>
+                )}
               </TableRow>)
             ))}
           </TableBody>
