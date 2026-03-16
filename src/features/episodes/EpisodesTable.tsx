@@ -25,6 +25,7 @@ import { selectEpisode } from './episodesSlice';
 import { openDrawer, toggleIdColumn } from '../ui/uiSlice';
 import type { Episode } from '../../types/episode';
 import { useState } from 'react';
+import { formatDate } from '../../utils/dateHelper';
 
 interface EpisodesTableProps {
   episodes: Episode[];
@@ -108,7 +109,15 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
           <TableBody>
             {loading ? (
               renderSkeletons(5)
-            ) : (episodes.map((ep) => (
+            ) : episodes.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={showId ? 5 : 4} align="center" sx={{ py: 4 }}>
+                <Typography variant="body1" color="text.secondary">
+                  No episodes available.
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ) : (episodes.map((ep) => (
               <TableRow key={ep.id} hover> 
                 <TableCell>
                   <IconButton onClick={(e) => handleMenuOpen(e, ep.id)}>
@@ -121,11 +130,7 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
                 <TableCell>{ep.air_date}</TableCell>
                 {!isMobile && (
                     <TableCell>
-                      {new Date(ep.created).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      {formatDate(ep.created)}
                     </TableCell>
                 )}
               </TableRow>)

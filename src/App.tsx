@@ -44,7 +44,7 @@ function App() {
       <AppBar position="static" elevation={1}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-            <Typography variant="h6" sx={{ textDecoration: 'none', color: 'inherit', fontWeight: 'bold' }}>
+            <Typography variant="h6" component={Link} to="/" sx={{ textDecoration: 'none', color: 'inherit', fontWeight: 'bold' }}>
               Rick & Morty
             </Typography>
             {!isMobile && (

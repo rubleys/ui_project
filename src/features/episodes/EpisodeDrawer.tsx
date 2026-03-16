@@ -9,6 +9,7 @@ import {
   ListItemText,
   IconButton,
   Divider,
+  Skeleton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,6 +20,8 @@ import { useQuery } from '@apollo/client/react';
 import type { GetEpisodeDetailQuery, GetEpisodeDetailVariables } from '../../types/graphql';
 import { GET_EPISODE_DETAIL } from '../../graphql/queries';
 import type { Character, Episode } from '../../types/episode';
+import { Alert, AlertTitle } from '@mui/material';
+import { formatDate } from '../../utils/dateHelper';
 
 export default function EpisodeDrawer() {
   const dispatch = useDispatch();
@@ -47,8 +50,36 @@ export default function EpisodeDrawer() {
           <CloseIcon />
         </IconButton>
 
-        {loading && <Typography>Loading details...</Typography>}
-        {error && <Typography>Error loading details</Typography>}
+        {loading && (
+          <Box>
+            <Skeleton variant="text" width="60%" height={40} />
+            <Skeleton variant="text" width="40%" />
+            <Skeleton variant="text" width="50%" />
+            <Skeleton variant="text" width="45%" />
+            <Divider sx={{ my: 2 }} />
+            <Skeleton variant="text" width="30%" height={30} />
+            <List>
+              {Array.from({ length: 3 }, (_, i) => (
+                <ListItem key={i}>
+                  <ListItemAvatar>
+                    <Skeleton variant="circular" width={56} height={56} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={<Skeleton width="60%" />}
+                    secondary={<Skeleton width="40%" />}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
+
+        {error && (
+          <Alert severity="error">
+            <AlertTitle>Error Loading Details</AlertTitle>
+            {error.message || 'Failed to load episode details.'}
+          </Alert>
+        )}
 
         {episode && (
           <>
@@ -58,11 +89,7 @@ export default function EpisodeDrawer() {
             <Typography variant="body1">Episode: {episode.episode}</Typography>
             <Typography variant="body1">Air date: {episode.air_date}</Typography>
             <Typography variant="body1">
-              Created: {new Date(episode.created).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+              Created: {formatDate(episode.created)}
             </Typography>
              <Divider sx={{ my: 2 }} />
 
