@@ -13,6 +13,7 @@ import {
   Tooltip,
   Box, 
   Toolbar,
+  Skeleton,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -26,9 +27,10 @@ import { useState } from 'react';
 interface EpisodesTableProps {
   episodes: Episode[];
   showId: boolean;
+  loading?: boolean;
 }
 
-export default function EpisodesTable({ episodes, showId }: EpisodesTableProps) {
+export default function EpisodesTable({ episodes, showId, loading = false }: EpisodesTableProps) {
   const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -54,6 +56,19 @@ export default function EpisodesTable({ episodes, showId }: EpisodesTableProps) 
 
   const handleToggleId = () => {
     dispatch(toggleIdColumn());
+  };
+
+  const renderSkeletons = (count: number) => {
+    return Array.from({ length: count }, (_, index) => (
+      <TableRow key={`skeleton-${index}`}>
+        <TableCell><Skeleton /></TableCell>
+        <TableCell><Skeleton /></TableCell>
+        <TableCell><Skeleton /></TableCell>
+        <TableCell><Skeleton /></TableCell>
+        <TableCell><Skeleton /></TableCell>
+        {showId && <TableCell><Skeleton /></TableCell>}
+      </TableRow>
+    ));
   };
 
    return (
@@ -85,7 +100,9 @@ export default function EpisodesTable({ episodes, showId }: EpisodesTableProps) 
           </TableHead>
 
           <TableBody>
-            {episodes.map((ep) => (
+            {loading ? (
+              renderSkeletons(5)
+            ) : (episodes.map((ep) => (
               <TableRow key={ep.id}>
                 <TableCell>
                   <IconButton onClick={(e) => handleMenuOpen(e, ep.id)}>
@@ -97,7 +114,7 @@ export default function EpisodesTable({ episodes, showId }: EpisodesTableProps) 
                 <TableCell>{ep.air_date}</TableCell>
                 <TableCell>{new Date(ep.created).toLocaleDateString()}</TableCell>
                 {showId && <TableCell>{ep.id}</TableCell>}
-              </TableRow>
+              </TableRow>)
             ))}
           </TableBody>
         </Table>
