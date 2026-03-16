@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { ApolloProvider } from '@apollo/client/react'
 
-import './index.css'
+//import './index.css'
 import App from './App.tsx'
 import { persistor, store } from './app/store';
 import { apolloClient } from './graphql/apolloClient';
