@@ -1,26 +1,29 @@
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../../app/store';
 import { useEpisodes } from './useEpisodes';
 import EpisodesTable from './EpisodesTable';
 import EpisodeDrawer from './EpisodeDrawer';
 import { Typography, Pagination, Box } from '@mui/material';
 import { setCurrentPage } from '../ui/uiSlice';
 import { Alert, AlertTitle } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
+import { selectCurrentPage, selectShowIdColumn } from '../ui/selectors';
 
 export default function EpisodesPage() {
   const dispatch = useDispatch();
-  const currentPage = useSelector((state: RootState) => state.ui.currentPage);
-  const showId = useSelector((state: RootState) => state.ui.showIdColumn);
+  const currentPage = useSelector(selectCurrentPage);
+  const showId = useSelector(selectShowIdColumn);
 
   const { data, loading, error } = useEpisodes(currentPage, false);
 
   const episodes = data?.episodes?.results || [];
   const totalPages = data?.episodes?.info?.pages || 1;
 
-  const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
-    dispatch(setCurrentPage(page));
-  };
+  const handlePageChange = useCallback(
+    (_event: React.ChangeEvent<unknown>, page: number) => {
+      dispatch(setCurrentPage(page));
+    },
+    [dispatch]
+  );
 
   // Reset to first page on unmount
   useEffect(() => {

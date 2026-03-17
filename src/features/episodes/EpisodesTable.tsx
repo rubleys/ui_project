@@ -24,8 +24,28 @@ import { useDispatch } from 'react-redux';
 import { selectEpisode } from './episodesSlice';
 import { openDrawer, toggleIdColumn } from '../ui/uiSlice';
 import type { Episode } from '../../types/episode';
-import { useState } from 'react';
+import { useState, useCallback, useMemo, memo } from 'react';
 import { formatDate } from '../../utils/dateHelper';
+
+const EpisodeRow = memo(({ ep, showId, isMobile, onMenuOpen }: {
+  ep: Episode;
+  showId: boolean;
+  isMobile: boolean;
+  onMenuOpen: (event: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+}) => (
+  <TableRow hover>
+    <TableCell>
+      <IconButton onClick={(event) => onMenuOpen(event, ep.id)}>
+        <MoreVertIcon />
+      </IconButton>
+    </TableCell>
+    {showId && <TableCell>{ep.id}</TableCell>}
+    <TableCell>{ep.name}</TableCell>
+    <TableCell>{ep.episode}</TableCell>
+    <TableCell>{ep.air_date}</TableCell>
+    {!isMobile && <TableCell>{formatDate(ep.created)}</TableCell>}
+  </TableRow>
+));
 
 interface EpisodesTableProps {
   episodes: Episode[];
@@ -40,30 +60,30 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
+  const handleMenuOpen = useCallback((event: React.MouseEvent<HTMLButtonElement>, id: string) => {
     setAnchorEl(event.currentTarget);
     setSelectedId(id);
-  };
+  }, []);
 
-  const handleMenuClose = () => {
+  const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
     setSelectedId(null);
-  };
+  }, []);
 
-  const handleView = () => {
+  const handleView = useCallback(() => {
     if (selectedId) {
       dispatch(selectEpisode(selectedId));
       dispatch(openDrawer());
     }
     handleMenuClose();
-  };
+  }, [selectedId, dispatch]);
 
-  const handleToggleId = () => {
+  const handleToggleId = useCallback(() => {
     dispatch(toggleIdColumn());
-  };
+  }, [dispatch]);
 
-  const renderSkeletons = (count: number) => {
-    return Array.from({ length: count }, (_, index) => (
+ const renderSkeletons = useMemo(() => {
+    return Array.from({ length: 5 }, (_, index) => (
       <TableRow key={`skeleton-${index}`}>
         <TableCell><Skeleton /></TableCell>
         <TableCell><Skeleton /></TableCell>
@@ -73,11 +93,11 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
         {showId && <TableCell><Skeleton /></TableCell>}
       </TableRow>
     ));
-  };
+  }, [showId]);
 
    return (
     <Box>
-      <Toolbar>
+     <Toolbar>
         <Typography variant="h5">Episodes List</Typography>
         <Box sx={{ flexGrow: 1 }} /> 
         <Tooltip title={showId ? "Hide ID" : "Show ID"}>
@@ -108,7 +128,7 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
 
           <TableBody>
             {loading ? (
-              renderSkeletons(5)
+              renderSkeletons
             ) : episodes.length === 0 ? (
             <TableRow>
               <TableCell colSpan={showId ? 5 : 4} align="center" sx={{ py: 4 }}>
@@ -117,24 +137,17 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
                 </Typography>
               </TableCell>
             </TableRow>
-          ) : (episodes.map((ep) => (
-              <TableRow key={ep.id} hover> 
-                <TableCell>
-                  <IconButton onClick={(e) => handleMenuOpen(e, ep.id)}>
-                    <MoreVertIcon />
-                  </IconButton>
-                </TableCell>
-                {showId && <TableCell>{ep.id}</TableCell>}
-                <TableCell>{ep.name}</TableCell>
-                <TableCell>{ep.episode}</TableCell>
-                <TableCell>{ep.air_date}</TableCell>
-                {!isMobile && (
-                    <TableCell>
-                      {formatDate(ep.created)}
-                    </TableCell>
-                )}
-              </TableRow>)
-            ))}
+          ) : (
+            episodes.map((ep) => (
+              <EpisodeRow
+                key={ep.id}
+                ep={ep}
+                showId={showId}
+                isMobile={isMobile}
+                onMenuOpen={handleMenuOpen}
+              />
+              ))
+            )}
           </TableBody>
         </Table>
 

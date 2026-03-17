@@ -10,33 +10,36 @@ import {
   IconButton,
   Divider,
   Skeleton,
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../../app/store';
 import { closeDrawer } from '../ui/uiSlice';
 import { clearSelection } from './episodesSlice';
 import { useQuery } from '@apollo/client/react';
 import type { GetEpisodeDetailQuery, GetEpisodeDetailVariables } from '../../types/graphql';
 import { GET_EPISODE_DETAIL } from '../../graphql/queries';
 import type { Character, Episode } from '../../types/episode';
-import { Alert, AlertTitle } from '@mui/material';
 import { formatDate } from '../../utils/dateHelper';
+import { selectSelectedEpisodeId } from './selectors';
+import { selectDrawerOpen } from '../ui/selectors';
+import { useCallback } from 'react';
 
 export default function EpisodeDrawer() {
   const dispatch = useDispatch();
-  const open = useSelector((state: RootState) => state.ui.drawerOpen);
-  const selectedId = useSelector((state: RootState) => state.episodes.selectedEpisodeId);
+  const open = useSelector(selectDrawerOpen);
+  const selectedId = useSelector(selectSelectedEpisodeId);
 
   const { data, loading, error } = useQuery<GetEpisodeDetailQuery, GetEpisodeDetailVariables>(GET_EPISODE_DETAIL, {
     variables: { id: selectedId! },
     skip: !selectedId,
   });
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     dispatch(closeDrawer());
     dispatch(clearSelection());
-  };
+  }, [dispatch]);
 
   const episode: Episode | undefined = data?.episode;
 
@@ -101,7 +104,7 @@ export default function EpisodeDrawer() {
               {episode.characters?.map((ch: Character) => (
                 <ListItem key={ch.id} sx={{ display: 'flex', gap: 2 }}>
                   <ListItemAvatar>
-                    <Avatar src={ch.image} alt={ch.name} sx={{ width: 56, height: 56 }} />  {/* Avatar más grande */}
+                    <Avatar src={ch.image} alt={ch.name} sx={{ width: 56, height: 56 }} /> 
                   </ListItemAvatar>
                   <ListItemText
                     primary={ch.name}
