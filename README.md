@@ -117,12 +117,6 @@ Current automated coverage includes:
 - Episodes table rendering for loading, empty, and interaction states
 - Episode drawer rendering for loading, error, and close interaction states
 
-## Suggested Next Improvements
-
-- Add integration tests for pagination and detail flow
-- Add route-level pages for Characters and Locations
-- Improve README with screenshots or GIF demo
-
 ## Status
 
 Current status: Functional and polished for the Episodes dashboard flow, with improved architecture, responsive UI, selective persistence, pagination, and baseline automated unit tests.
