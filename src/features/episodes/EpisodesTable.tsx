@@ -131,7 +131,11 @@ export default function EpisodesTable({ episodes, showId, loading = false }: Epi
               renderSkeletons
             ) : episodes.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={showId ? 5 : 4} align="center" sx={{ py: 4 }}>
+              <TableCell
+                colSpan={1 + (showId ? 1 : 0) + 3 + (!isMobile ? 1 : 0)}
+                align="center"
+                sx={{ py: 4 }}
+              >
                 <Typography variant="body1" color="text.secondary">
                   No episodes available.
                 </Typography>
