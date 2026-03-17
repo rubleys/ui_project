@@ -108,12 +108,6 @@ npm install
 ### 2. Run development server
 npm run dev
 
-### 3. Build for production
-npm run build
-
-### 4. Preview production build
-npm run preview
-
 ### 5. Run tests
 npm test
 
