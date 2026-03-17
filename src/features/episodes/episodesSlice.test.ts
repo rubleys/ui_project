@@ -4,7 +4,12 @@ import episodesReducer, { clearSelection, selectEpisode } from './episodesSlice'
 describe('episodesSlice', () => {
   it('should return initial state', () => {
     const state = episodesReducer(undefined, { type: 'unknown' });
-    expect(state).toEqual({ selectedEpisodeId: null });
+    expect(state).toEqual({
+      episodes: [],
+      selectedEpisodeId: null,
+      totalPages: 0,
+      currentFetchedPage: 0,
+    });
   });
 
   it('should set selected episode id', () => {
@@ -13,7 +18,12 @@ describe('episodesSlice', () => {
   });
 
   it('should clear selected episode id', () => {
-    const startState = { selectedEpisodeId: '42' };
+    const startState = {
+      episodes: [],
+      selectedEpisodeId: '42',
+      totalPages: 0,
+      currentFetchedPage: 0,
+    };
     const state = episodesReducer(startState, clearSelection());
     expect(state.selectedEpisodeId).toBeNull();
   });

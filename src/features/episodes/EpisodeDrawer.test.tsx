@@ -20,7 +20,12 @@ function renderDrawer() {
       theme: themeReducer,
     },
     preloadedState: {
-      episodes: { selectedEpisodeId: '1' },
+      episodes: {
+        episodes: [],
+        selectedEpisodeId: '1',
+        totalPages: 0,
+        currentFetchedPage: 0,
+      },
       ui: { drawerOpen: true, showIdColumn: true, currentPage: 1 },
       theme: { mode: 'light' as const },
     },
