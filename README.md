@@ -7,7 +7,7 @@ A React + TypeScript dashboard that lists Rick and Morty episodes with paginatio
 This project was built as a frontend exercise focused on:
 
 - GraphQL data consumption
-- Redux state management for UI preferences
+- Redux state management for UI state and persisted episodes data
 - Responsive UI with Material UI
 - Better UX states (loading, error, empty)
 - Clear separation between remote data and local UI state
@@ -28,9 +28,11 @@ This project was built as a frontend exercise focused on:
 ### Apollo Client for remote data
 Apollo is responsible for fetching and caching API data (episodes list and episode details).
 
-### Redux for UI state and preferences
-Redux stores local UI state only, such as:
+### Redux for app state and persisted episodes snapshot
+Redux stores application state such as:
 
+- Episodes list (persisted snapshot)
+- Last fetched episodes page metadata
 - Theme mode
 - ID column visibility
 - Drawer open/close state
@@ -38,13 +40,26 @@ Redux stores local UI state only, such as:
 - Current pagination page
 
 ### Selective persistence
-Redux Persist stores only selected UI preferences in localStorage (instead of persisting the full store), improving maintainability and reducing stale-state risk.
+Redux Persist stores selected fields in localStorage:
+
+- Theme: mode
+- UI: ID visibility and current page
+- Episodes: episodes list, total pages, and last fetched page
+
+Transient state is not persisted when it should reset after reload (for example, selected episode and drawer open state).
+
+### Cache and refetch strategy
+- Apollo handles GraphQL fetching and in-memory cache during runtime.
+- Redux Persist keeps a durable episodes snapshot across browser reloads.
+- On app load, if persisted episodes match the current page, the episodes query is skipped.
+- If the requested page differs from the persisted last page, the query runs and Redux is updated.
 
 ## Features Implemented
 
 ### Episodes page
 - Paginated episodes list
 - Pagination controls with current page state
+- Current page persists after browser reload (F5)
 - Table toolbar with:
   - "Episodes List" title
   - Show/Hide ID toggle
@@ -119,4 +134,4 @@ Current automated coverage includes:
 
 ## Status
 
-Current status: Functional and polished for the Episodes dashboard flow, with improved architecture, responsive UI, selective persistence, pagination, and baseline automated unit tests.
+Current status: Functional and polished for the Episodes dashboard flow, with responsive UI, persisted page and episodes snapshot, controlled refetch strategy, pagination, and baseline automated unit tests.

@@ -5,7 +5,7 @@ import EpisodeDrawer from './EpisodeDrawer';
 import { Typography, Pagination, Box } from '@mui/material';
 import { setCurrentPage } from '../ui/uiSlice';
 import { Alert, AlertTitle } from '@mui/material';
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { selectCurrentPage, selectShowIdColumn } from '../ui/selectors';
 
 export default function EpisodesPage() {
@@ -13,10 +13,7 @@ export default function EpisodesPage() {
   const currentPage = useSelector(selectCurrentPage);
   const showId = useSelector(selectShowIdColumn);
 
-  const { data, loading, error } = useEpisodes(currentPage, false);
-
-  const episodes = data?.episodes?.results || [];
-  const totalPages = data?.episodes?.info?.pages || 1;
+  const { episodes, loading, error, totalPages } = useEpisodes(currentPage);
 
   const handlePageChange = useCallback(
     (_event: React.ChangeEvent<unknown>, page: number) => {
@@ -24,13 +21,6 @@ export default function EpisodesPage() {
     },
     [dispatch]
   );
-
-  // Reset to first page on unmount
-  useEffect(() => {
-    return () => {
-      dispatch(setCurrentPage(1)); 
-    };
-  }, [dispatch]);
 
   // empty state
   if (!loading && !error && episodes.length === 0) {

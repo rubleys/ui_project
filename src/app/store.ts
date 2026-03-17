@@ -19,12 +19,21 @@ const uiPersistConfig = {
   whitelist: ['showIdColumn', 'currentPage'], 
 };
 
+// To persist episodes data across sessions, but not the selected episode ID which is transient UI state that should reset on page refresh
+const episodesPersistConfig = {
+  key: 'episodes',
+  storage,
+  whitelist: ['episodes', 'totalPages', 'currentFetchedPage'],
+};
+
+
 const persistedThemeReducer = persistReducer(themePersistConfig, themeReducer);
 const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
+const persistedEpisodesReducer = persistReducer(episodesPersistConfig, episodesReducer);
 
 export const store = configureStore({
   reducer: {
-    episodes: episodesReducer, // No persistido, solo estado temporal
+    episodes: persistedEpisodesReducer,
     theme: persistedThemeReducer,
     ui: persistedUiReducer,
   },
