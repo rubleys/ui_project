@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'; // localStorage
 import episodesReducer from '../features/episodes/episodesSlice';
 import themeReducer from '../features/theme/themeSlice';
 import uiReducer from '../features/ui/uiSlice';
+import authReducer from '../features/auth/authSlice';
 
 //to handle persitence of theme mode (light/dark) across sessions, but not transient UI state like the drawer open/close state which should reset on page refresh
 const themePersistConfig = {
@@ -26,16 +27,25 @@ const episodesPersistConfig = {
   whitelist: ['episodes', 'totalPages', 'currentFetchedPage'],
 };
 
+// To persist auth state across sessions
+const authPersistConfig = {
+  key: 'auth',
+  storage,
+  whitelist: ['isAuthenticated', 'user'],
+};
+
 
 const persistedThemeReducer = persistReducer(themePersistConfig, themeReducer);
 const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
 const persistedEpisodesReducer = persistReducer(episodesPersistConfig, episodesReducer);
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
     episodes: persistedEpisodesReducer,
     theme: persistedThemeReducer,
     ui: persistedUiReducer,
+    auth: persistedAuthReducer,
   },
 });
 
