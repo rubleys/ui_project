@@ -18,9 +18,30 @@ function LoginPage() {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateEmail = (email: string): string => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) return 'Email is required.';
+    if (!emailRegex.test(email)) return 'Invalid email format.';
+    return '';
+  };
+
+  const validatePassword = (password: string): string => {
+    if (!password) return 'Password is required.';
+    if (password.length < 6) return 'Password must be at least 6 characters long.';
+    return '';
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    setEmailError(emailErr);
+    setPasswordError(passwordErr);
+    if (emailErr || passwordErr) return;
+    
     dispatch(clearError());
     dispatch(loginStart());
 
@@ -34,7 +55,7 @@ function LoginPage() {
         }));
         navigate('/');
       } else {
-        dispatch(loginFailure('Credenciales inválidas. Intenta: admin@test.com / password123'));
+        dispatch(loginFailure('Invalid credentials. Please try again.'));
       }
     }, 1000);
   };
@@ -59,11 +80,11 @@ function LoginPage() {
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Iniciar Sesión
+          Sign In
         </Typography>
         
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
-          Ingresa tus credenciales para acceder
+          Enter your credentials to access
         </Typography>
 
         {error && (
@@ -72,26 +93,36 @@ function LoginPage() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form noValidate onSubmit={handleSubmit}>
           <TextField
             fullWidth
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError('');
+            }}
             margin="normal"
             required
             autoComplete="email"
+            error={!!emailError}
+            helperText={emailError}
           />
           <TextField
             fullWidth
-            label="Contraseña"
+            label="Password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (passwordError) setPasswordError('');
+            }}
             margin="normal"
             required
             autoComplete="current-password"
+            error={!!passwordError}
+            helperText={passwordError}
           />
           <Button
             fullWidth
@@ -101,12 +132,12 @@ function LoginPage() {
             disabled={isLoading}
             sx={{ mt: 3 }}
           >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Iniciar Sesión'}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign in'}
           </Button>
         </form>
 
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2 }}>
-          Credenciales de prueba: admin@test.com / password123
+          Test Credentials: admin@test.com / password123
         </Typography>
       </Paper>
     </Box>

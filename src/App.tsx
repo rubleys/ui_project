@@ -90,9 +90,13 @@ function App() {
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: 'background.default' }}>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/login"
+            element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+          />
           <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/episodes" element={<ProtectedRoute><EpisodesPage /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />} />
         </Routes>
       </Box>
     </Box>
