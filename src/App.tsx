@@ -1,9 +1,9 @@
 //import './App.css'
-import { Link, Route, Routes, Navigate } from 'react-router-dom'
 import EpisodesPage from './features/episodes/EpisodesPage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import LoginPage from './features/auth/LoginPage';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import type { RootState } from './app/store';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,14 +12,18 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useMediaQuery, Menu, MenuItem, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { logout } from './features/auth/authSlice';
 
 
 function App() {
   const mode = useSelector((state: RootState) => state.theme.mode);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMobile = useMediaQuery('(max-width:768px)'); // Simple breakpoint
 
@@ -34,6 +38,12 @@ function App() {
   };
 
   const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
     setAnchorEl(null);
   };
 
@@ -74,6 +84,9 @@ function App() {
                 </IconButton>
               )}
               <ThemeToggleButton />
+              <Button color="inherit" onClick={handleLogout} sx={{ textTransform: 'none' }}>
+                Logout
+              </Button>
             </Box>
           </Toolbar>
         </AppBar>
@@ -86,6 +99,7 @@ function App() {
       >
         <MenuItem component={Link} to="/" onClick={handleMenuClose}>Home</MenuItem>
         <MenuItem component={Link} to="/episodes" onClick={handleMenuClose}>Episodes</MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: 'background.default' }}>
