@@ -1,6 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import type { RootState } from '../../app/store';
 import { loginStart, loginSuccess, loginFailure, clearError } from './authSlice';
 import Box from '@mui/material/Box';
@@ -10,54 +12,68 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  const validateEmail = (email: string): string => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) return 'Email is required.';
-    if (!emailRegex.test(email)) return 'Invalid email format.';
-    return '';
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email('Invalid email format.')
+      .required('Email is required.'),
+    password: Yup.string()
+      .required('Password is required.')
+      .matches(/[A-Z]/, 'Must contain an uppercase letter.')
+      .matches(/[a-z]/, 'Must contain a lowercase letter.')
+      .matches(/\d/, 'Must contain a number.')
+      .matches(/[^A-Za-z0-9]/, 'Must contain a special character.')
+      .min(12, 'Password must be at least 12 characters long.'),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema,
+    onSubmit: (values, { setSubmitting }) => {
+      dispatch(clearError());
+      dispatch(loginStart());
+
+      setTimeout(() => {
+        if (values.email === 'admin@test.com' && values.password === 'Password123!') {
+          dispatch(
+            loginSuccess({
+              id: '1',
+              email: values.email,
+              name: 'Admin User',
+            }),
+          );
+          navigate('/');
+        } else {
+          dispatch(loginFailure('Invalid credentials. Try: admin@test.com / Password123!'));
+        }
+        setSubmitting(false);
+      }, 1000);
+    },
+  });
+
+  const handlePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
-  const validatePassword = (password: string): string => {
-    if (!password) return 'Password is required.';
-    if (password.length < 6) return 'Password must be at least 6 characters long.';
-    return '';
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const emailErr = validateEmail(email);
-    const passwordErr = validatePassword(password);
-    setEmailError(emailErr);
-    setPasswordError(passwordErr);
-    if (emailErr || passwordErr) return;
-    
-    dispatch(clearError());
-    dispatch(loginStart());
-
-    // Simulación de login - reemplazar con llamada real a API
-    setTimeout(() => {
-      if (email === 'admin@test.com' && password === 'password123') {
-        dispatch(loginSuccess({
-          id: '1',
-          email: email,
-          name: 'Admin User',
-        }));
-        navigate('/');
-      } else {
-        dispatch(loginFailure('Invalid credentials. Please try again.'));
-      }
-    }, 1000);
+  const handleFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (error) {
+      dispatch(clearError());
+    }
+    formik.handleChange(event);
   };
 
   return (
@@ -93,51 +109,63 @@ function LoginPage() {
           </Alert>
         )}
 
-        <form noValidate onSubmit={handleSubmit}>
+        <Box component="form" noValidate onSubmit={formik.handleSubmit}>
           <TextField
             fullWidth
+            id="email"
+            name="email"
             label="Email"
             type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (emailError) setEmailError('');
-            }}
+            value={formik.values.email}
+            onChange={handleFieldChange}
+            onBlur={formik.handleBlur}
             margin="normal"
-            required
             autoComplete="email"
-            error={!!emailError}
-            helperText={emailError}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
           />
+
           <TextField
             fullWidth
+            id="password"
+            name="password"
             label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (passwordError) setPasswordError('');
-            }}
+            type={showPassword ? 'text' : 'password'}
+            value={formik.values.password}
+            onChange={handleFieldChange}
+            onBlur={formik.handleBlur}
             margin="normal"
-            required
             autoComplete="current-password"
-            error={!!passwordError}
-            helperText={passwordError}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    onClick={handlePasswordVisibility}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <Button
             fullWidth
             type="submit"
             variant="contained"
             size="large"
-            disabled={isLoading}
+            disabled={isLoading || formik.isSubmitting}
             sx={{ mt: 3 }}
           >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign in'}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
           </Button>
-        </form>
+        </Box>
 
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2 }}>
-          Test Credentials: admin@test.com / password123
+          Test Credentials: admin@test.com / Password123!
         </Typography>
       </Paper>
     </Box>
